@@ -18,7 +18,7 @@
 <body>
 
 <div class="container">
-    <h1>Welcome to My PHP App</h1>
+    <h1>Hello, Welcome to My PHP App</h1>
     
     <!-- HTML Form sending data to the same page via POST method -->
     <form method="POST" action="">
