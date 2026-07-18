@@ -19,30 +19,21 @@ pipeline {
         }
 
         stage('Deploy to InfinityFree') {
+            agent {
+                // Uses a lightweight Docker container that already has LFTP installed
+                docker { image 'mwgamera/lftp' } 
+            }
             steps {
-                ftpPublisher(
-                    alwaysPublishFromMaster: false,
-                    continueOnError: false,
-                    failOnError: true,
-                    masterNodeName: '',
-                    paramPublish: [parameterName: ''],
-                    publishers: [
-                        [
-                            configName: 'infinityfree',
-                            transfers: [
-                                [
-                                    sourceFiles: '**/*',
-                                    excludes: '.git/**, Jenkinsfile, README.md',
-                                    remoteDirectory: 'htdocs',
-                                    removePrefix: '',
-                                    flatten: false
-                                ]
-                            ],
-                            useWorkspaceInPromotion: false,
-                            usePromotionTimestamp: false
-                        ]
-                    ]
-                )
+                echo 'Deploying files securely via LFTP...'
+                sh '''
+                    lftp -c "
+                    set ftp:passive-mode true;
+                    set ftp:ssl-allow false;
+                    open -u 'if0_42438585','C5u4b3lKP8D5Zp' ftpupload.net;
+                    mirror -R --exclude .git/ --exclude Jenkinsfile --exclude README.md ./ /htdocs;
+                    quit
+                    "
+                '''
             }
         }
     }
