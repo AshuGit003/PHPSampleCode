@@ -9,8 +9,12 @@ pipeline {
         }
 
         stage('PHP Syntax Check') {
+            agent {
+                docker { image 'php:8.2-cli' } // Spins up a temporary official PHP container
+            }
             steps {
-                bat 'echo Skipping php -l if PHP not installed on agent, or run: php -l index.php'
+                echo 'Checking PHP files for syntax errors...'
+                sh 'php -l index.php' // Runs inside the temporary PHP container
             }
         }
 
