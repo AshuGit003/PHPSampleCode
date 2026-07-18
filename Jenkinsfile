@@ -17,6 +17,11 @@ pipeline {
         stage('Deploy to InfinityFree') {
             steps {
                 ftpPublisher(
+                    alwaysPublishFromMaster: false,
+                    continueOnError: false,
+                    failOnError: true,
+                    masterNodeName: '',
+                    paramPublish: [parameterName: ''],
                     publishers: [
                         [
                             configName: 'infinityfree',
