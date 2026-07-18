@@ -20,21 +20,26 @@ pipeline {
 
         stage('Deploy to InfinityFree') {
             agent {
-                // Uses a highly stable, lightweight official Linux image
                 docker { image 'alpine:latest' } 
             }
             steps {
-                echo 'Installing LFTP and deploying files securely...'
+                echo 'Installing LFTP and deploying with speed optimizations...'
                 sh '''
-                    # Install lftp using the Alpine package manager
                     apk add --no-cache lftp
                     
-                    # Run the deployment mirror script
                     lftp -c "
                     set ftp:passive-mode true;
                     set ftp:ssl-allow false;
+                    
+                    # SPEED OPTIMIZATIONS 👇
+                    set net:timeout 10;
+                    set net:max-retries 2;
+                    set net:reconnect-interval-base 5;
+                    
                     open -u 'if0_42438585','C5u4b3lKP8D5Zp' ftpupload.net;
-                    mirror -R --exclude .git/ --exclude Jenkinsfile --exclude README.md ./ /htdocs;
+                    
+                    # --parallel=5 uploads up to 5 files at the exact same time
+                    mirror -R --parallel=5 --exclude .git/ --exclude Jenkinsfile --exclude README.md ./ /htdocs;
                     quit
                     "
                 '''
