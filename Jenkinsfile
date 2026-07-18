@@ -20,12 +20,16 @@ pipeline {
 
         stage('Deploy to InfinityFree') {
             agent {
-                // Uses a lightweight Docker container that already has LFTP installed
-                docker { image 'mwgamera/lftp' } 
+                // Uses a highly stable, lightweight official Linux image
+                docker { image 'alpine:latest' } 
             }
             steps {
-                echo 'Deploying files securely via LFTP...'
+                echo 'Installing LFTP and deploying files securely...'
                 sh '''
+                    # Install lftp using the Alpine package manager
+                    apk add --no-cache lftp
+                    
+                    # Run the deployment mirror script
                     lftp -c "
                     set ftp:passive-mode true;
                     set ftp:ssl-allow false;
